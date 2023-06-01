@@ -143,18 +143,14 @@ public sealed partial class QariPage : Page
     private List<string> GetAudioIds(string fileName)
     {
         List<string> quranAudioIds = new List<string>();
-        using (var streamReader = File.OpenText(fileName))
+        using var streamReader = File.OpenText(fileName);
+        string line = String.Empty;
+        while ((line = streamReader.ReadLine()) != null)
         {
-            string line = String.Empty;
-            while ((line = streamReader.ReadLine()) != null)
+            if (line.Contains("span") && line.Contains(".mp3"))
             {
-                if (line.Contains("href"))
-                {
-                    var audioId = line.Replace("<a href=\"", "");
-                    var lastIndex = audioId.IndexOf("\">");
-                    audioId = audioId.Substring(0, lastIndex);
-                    quranAudioIds.Add(audioId);
-                }
+                string audioId = line.Substring(39, 10);
+                quranAudioIds.Add(audioId);
             }
         }
         return quranAudioIds;
